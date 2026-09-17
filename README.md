@@ -29,7 +29,7 @@ Para viabilizar as análises de negócio, o dado limpo foi modelado nas seguinte
 
 ## 4. Análise de Negócio e Dashboards
 
-### 4.1. O Paradoxo do Grátis vs. Pago (Popularidade & Qualidade)
+### 4.1. Analise da Monetização Grátis vs. Pago 
 
 **Pergunta:** Jogos gratuitos atraem uma base de jogadores significativamente maior? Como a crítica avalia a qualidade desses jogos em comparação aos pagos?
 
@@ -51,28 +51,33 @@ ORDER BY media_jogadores DESC;
 ```
 <img width="1342" height="400" alt="Gráfico Grátis vs Pago" src="https://github.com/user-attachments/assets/3a7d623a-076b-4a38-8f3e-fdb710d21e53" />
 
-> > **Conclusão Analítica:** A análise técnica demonstra que o modelo *Free-to-Play* (Gratuito) possui um alcance de público significativamente maior, registrando uma base média de jogadores na casa de 3,1 milhões. Ao cruzar essa métrica de volume com a avaliação da crítica especializada, é possível observar um empate estatístico nas notas 72.2 para gratuitos vs. 72.1 para pagos. 
+> > **Conclusão Analítica:** A análise técnica demonstra que o modelo Gratuito possui um alcance de público significativamente maior, registrando uma base média de jogadores na casa de 3,1 milhões. Ao cruzar essa métrica de volume com a avaliação da crítica especializada, é possível observar um empate estatístico nas notas 72.2 para gratuitos vs. 72.1 para pagos. 
 
-### 4.2. A Evolução do Preço no Tempo (História do Mercado)
+### 4.2. A Evolução dos Preços
 **Pergunta:** Como o mercado de jogos de PC se comportou financeiramente ao longo dos anos? Existe uma tendência histórica de aumento no valor final dos jogos pagos?
 
 <img width="1342" height="400" alt="Gráfico Histórico de Preço" src="https://github.com/user-attachments/assets/81278f78-786e-4073-8e5d-b01aa5b33c7c" />
 
-> **Conclusão Analítica:** Após extrair de forma estruturada o ano de lançamento, a análise histórica em série temporal (filtrada entre 1997 e 2016 para remover *outliers*) revela o comportamento inflacionário e de precificação da indústria. É possível observar quedas expressivas no final dos anos 90, seguidas por uma curva de ascensão que atinge o pico de preço médio (13,89) no ano de 2013, marcando a adoção de novas "tabelas de preços" pela indústria para jogos de maior orçamento.
+> **Conclusão Analítica:** A análise histórica em série temporal filtrada entre 1997 a 2016 revela o comportamento inflacionário e de precificação da indústria. É possível observar quedas expressivas no final dos anos 90, seguidas por uma curva de ascensão que atinge o pico de preço médio 13,89 no ano de 2013, marcando a adoção de novas "tabelas de preços" pela indústria para jogos de maior orçamento.
 
-### 4.3. Engajamento por Gênero
+### 4.3. Domínio de Engajamento
 **Pergunta:** Quais gêneros geram a comunidade mais engajada em volume de recomendações?
 
 <img width="1342" height="400" alt="Gráfico Engajamento por Gênero" src="https://github.com/user-attachments/assets/7dad975c-0c37-4f34-8490-3b12415c5bd5" />
 
-> **Conclusão Analítica:** Validando a modelagem da `dim_genero` (construída via *Unpivot*), o cruzamento aponta claramente que os nichos tradicionais de **Ação** (média de 7.050 recomendações/jogo) e **RPG** (5.462) dominam o engajamento da comunidade. Curiosamente, categorias com alto volume de publicações, como *Indie* e *Casual*, figuram na base do ranking de engajamento médio. Isso dita fortemente o comportamento do mercado: as *Software Houses* que buscam comunidades massivas e altamente ativas tendem a focar seus investimentos em títulos de Ação e RPG.
+> **Conclusão Analítica:** A análise técnica demonstra que os nichos tradicionais de **Ação** (com média de 7.050 recomendações/jogo) e **RPG** (com média de 5.462) dominam o engajamento da comunidade. Curiosamente, categorias com alto volume de publicações, como *Indie* e *Casual*, figuram na base do ranking de engajamento médio. A partir disso, é possível analisar o comportamento do mercado: as *Software Houses* que buscam comunidades massivas e altamente ativas tendem a focar seus investimentos em títulos de Ação e RPG.
 
 ---
 
 ## 5. Autoavaliação e Considerações Finais
-O desenvolvimento deste MVP atendeu com sucesso ao desafio de estruturar um pipeline completo focado em modelagem analítica. A decisão de separar a tabela de gêneros usando *Unpivot* e o tratamento de inconsistências de data com Regex garantiram que a Camada Gold ficasse robusta e pronta para consumo por ferramentas de BI, sem que os erros originais da base quebrassem a visualização. 
+A construção deste MVP foi um ótimo desafio para colocar em prática a estruturação de um pipeline completo. Para garantir a **Qualidade dos Dados e a Modelagem Dimensional**, precisei tomar algumas decisões importantes ao longo do caminho:
 
-A experiência consolida a importância de alinhar regras de negócio com boas práticas de Engenharia de Dados (como o uso do Delta Lake para versionamento e proteção de esquema), entregando um produto de dados confiável e escalável.
+* **Padronização e Entendimento:** O primeiro passo foi analisar os tipos de dados originais e arrumar as nomenclaturas das colunas. Isso foi essencial para facilitar a leitura e o entendimento do negócio antes de começar a separar as tabelas.
+* **Tratamento de Texto com Regex:** Ao analisar os dados para criar as tabelas dimensão, reparei que a coluna de data de lançamento estava como texto e com os formatos bagunçados. Para resolver isso, utilizei o *Regex* para manipular o texto e conseguir extrair apenas o ano exato de forma limpa.
+* **Modelagem de Gêneros com Unpivot:** Também percebi que existiam várias colunas booleanas indicando o gênero do jogo. Como um mesmo jogo pode estar em mais de um gênero (ex: Ação e RPG), utilizei o *Unpivot* para separar essas informações em linhas. Eu precisava fazer isso para saber exatamente o gênero de cada jogo na hora da análise, sem que os números do painel ficassem distorcidos.
+
+**Considerações Finais**
+Este projeto também marcou a minha primeira experiência utilizando o **Databricks**. Tive que aprender a plataforma do zero, entendendo primeiro como funcionava a importação de um arquivo `.csv` para dentro do ambiente deles. Depois de conseguir ingerir o arquivo, aprendi como acessar e consultar esses dados através do notebook. Foi uma excelente oportunidade para vivenciar a criação de um pipeline de dados de ponta a ponta, desde a entrada do dado bruto até a visualização final, aprendendo na prática do mercado.
 
 ---
-**Tecnologias Utilizadas:** Databricks, Apache Spark (PySpark), SQL, Delta Lake, Unity Catalog, Markdown.
+**Tecnologias Utilizadas:** Databricks, PySpark, SQL, Delta Lake, Unity Catalog, Markdown.
